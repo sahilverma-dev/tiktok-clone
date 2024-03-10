@@ -29,7 +29,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // appwrite
 import { AppwriteException } from "appwrite";
@@ -46,6 +46,7 @@ const formSchema = z.object({
 });
 
 const LoginForm = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -63,8 +64,10 @@ const LoginForm = () => {
     unknown
   >({
     mutationFn: ({ email, password }) => loginUser(email, password),
-    onSuccess: (data) => {
-      console.log(data);
+    onSuccess: () => {
+      navigate("/");
+      // JUGAAD NOT RECOMMENDED
+      window.location.reload();
       toast.success("Login successful");
     },
     onError: (e) => {
@@ -122,7 +125,7 @@ const LoginForm = () => {
                       <Label htmlFor="password">Password</Label>
                       <div
                         className={cn([
-                          "flex items-center h-14 w-full rounded-md border border-input bg-background text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ",
+                          "flex items-center h-14 w-full rounded-md border border-input text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ",
                         ])}
                       >
                         <input

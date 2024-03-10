@@ -1,3 +1,4 @@
+import { audioStore } from "./audio.store";
 import { userStore } from "./user.store";
 
-export { userStore };
+export { userStore, audioStore };

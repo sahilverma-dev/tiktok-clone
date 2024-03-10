@@ -33,12 +33,15 @@ import { Link } from "react-router-dom";
 
 // appwrite
 import { AppwriteException } from "appwrite";
-import { registerUser } from "@/services/appwrite/utils/register-user";
+import { registerUser } from "@/services/appwrite/utils/registerUser";
 
 // form schema
 const formSchema = z.object({
   email: z.string().email({
     message: "Invalid email address.",
+  }),
+  fullName: z.string().min(3, {
+    message: "Full name should be atleast 3 characters long.",
   }),
   password: z.string().min(8, {
     message: "Password must be at least 8 characters.",
@@ -57,16 +60,22 @@ const RegisterForm = () => {
       email: "",
       password: "",
       confirmPassword: "",
+      fullName: "",
     },
   });
 
   const { isPending, mutate: registerMutation } = useMutation<
     unknown,
     unknown,
-    { email: string; password: string },
+    {
+      email: string;
+      password: string;
+      fullName: string;
+    },
     unknown
   >({
-    mutationFn: ({ email, password }) => registerUser(email, password),
+    mutationFn: ({ email, fullName, password }) =>
+      registerUser({ email, fullName, password }),
     onSuccess: (data) => {
       console.log(data);
       toast.success("Check your email and verify your account");
@@ -79,12 +88,12 @@ const RegisterForm = () => {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    const { email, password, confirmPassword } = values;
+    const { email, password, confirmPassword, fullName } = values;
 
     if (password !== confirmPassword) {
       toast.error("Passwords do not match");
     } else {
-      registerMutation({ email, password });
+      registerMutation({ email, fullName, password });
     }
   };
 
@@ -96,16 +105,16 @@ const RegisterForm = () => {
             <FormField
               disabled={isPending}
               control={form.control}
-              name="email"
+              name="fullName"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
                     <div className="grid gap-2">
-                      <Label htmlFor="email">Email</Label>
+                      <Label htmlFor="fullName">Full Name</Label>
                       <Input
-                        id="email"
+                        id="name"
                         className="w-full h-14 px-4 text-base rounded-lg"
-                        placeholder="Enter your email"
+                        placeholder="Enter your name"
                         {...field}
                       />
                     </div>
@@ -117,6 +126,29 @@ const RegisterForm = () => {
             <FormField
               disabled={isPending}
               control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <div className="grid gap-2">
+                      <Label htmlFor="email">Email</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        className="w-full h-14 px-4 text-base rounded-lg"
+                        placeholder="Enter your email"
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              disabled={isPending}
+              control={form.control}
               name="password"
               render={({ field }) => (
                 <FormItem>
@@ -125,7 +157,7 @@ const RegisterForm = () => {
                       <Label htmlFor="password">Password</Label>
                       <div
                         className={cn([
-                          "flex items-center h-14 w-full rounded-md border border-input bg-background text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ",
+                          "flex items-center h-14 w-full rounded-md border border-input text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ",
                         ])}
                       >
                         <input
@@ -168,14 +200,14 @@ const RegisterForm = () => {
                       </Label>
                       <div
                         className={cn([
-                          "flex items-center h-14 w-full rounded-md border border-input bg-background text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ",
+                          "flex items-center h-14 w-full rounded-md border border-input text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ",
                         ])}
                       >
                         <input
                           id="confirm-password"
                           type={showPassword ? "text" : "password"}
                           className="h-full px-4 text-base py-2 w-full outline-none bg-transparent"
-                          placeholder="Enter your password"
+                          placeholder="Confirm your password"
                           {...field}
                         />
                         <div className="h-full p-2 flex items-center justify-center">
@@ -210,7 +242,7 @@ const RegisterForm = () => {
             </p>
           </div>
 
-          <div className="mt-5">
+          <div className="my-5">
             <Button
               type="submit"
               className="w-full h-14 text-base rounded-full gap-2"
