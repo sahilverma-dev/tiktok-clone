@@ -63,7 +63,11 @@ const BottomNavigation = () => {
         >
           {user ? (
             <div className="select-none flex flex-col items-center justify-center flex-1 transition duration-100 ease-out transform false animate-activate-shrink">
-              <img src={user?.avatar} alt="" className="h-8" />
+              <img
+                src={user?.avatar}
+                alt=""
+                className="h-8 w-8 aspect-square rounded-full object-cover"
+              />
             </div>
           ) : (
             <div className="select-none flex flex-col items-center justify-center flex-1 transition duration-100 ease-out transform false animate-activate-shrink">
@@ -73,7 +77,11 @@ const BottomNavigation = () => {
         </NavLink>
       </nav>
       <AnimatePresence mode="wait">
-        {isOpen && <UploadForm close={() => setIsOpen(false)} />}
+        {isOpen && (
+          <>
+            <UploadForm close={() => setIsOpen(false)} />
+          </>
+        )}
       </AnimatePresence>
     </div>
   );

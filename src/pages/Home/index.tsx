@@ -1,21 +1,19 @@
-import { getVideos } from "@/services/appwrite/utils/get-videos";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteVideos } from "@/hooks/useInfiniteVideos";
 import Loader from "./Loader";
 import VideosList from "./VideosList";
 
 const Home = () => {
-  const { data, isLoading } = useQuery({
-    queryKey: ["videos"],
-    queryFn: getVideos,
-    retry: 2,
-  });
+  const { data, isLoading, fetchNextPage } = useInfiniteVideos();
 
   if (isLoading) {
     return <Loader />;
   } else
     return (
       <div>
-        <VideosList videos={data?.documents || []} />
+        <VideosList
+          videos={data?.pages.flatMap((page) => page.documents) || []}
+          fetchNextPage={fetchNextPage}
+        />
       </div>
     );
 };

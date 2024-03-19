@@ -11,14 +11,19 @@ import { Video } from "@/interfaces";
 type Type = (data: {
   caption: string;
   video: File;
+  thumbnail: File;
   userId: string;
 }) => Promise<Video>;
 
-export const addVideo: Type = async ({ caption, video, userId }) => {
+export const addVideo: Type = async ({ caption, video, userId, thumbnail }) => {
   const videoId = ID.unique();
 
   const videoData = await uploadFile(video);
-  const videoCDN = await storage.getFileDownload(BUCKET_ID, videoData.$id);
+  const thumbnailData = await uploadFile(thumbnail);
+
+  const videoCDN = storage.getFileDownload(BUCKET_ID, videoData.$id);
+  const thumbnailCDN = storage.getFileDownload(BUCKET_ID, thumbnailData.$id);
+
   const videoDoc = await databases.createDocument(
     DATABASE_ID,
     VIDEO_COLLECTION_ID,
@@ -28,6 +33,7 @@ export const addVideo: Type = async ({ caption, video, userId }) => {
       video: videoCDN,
       storage_id: videoData.$id,
       user: userId,
+      thumbnail: thumbnailCDN,
     }
   );
 

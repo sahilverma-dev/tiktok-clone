@@ -7,8 +7,8 @@ import { CgSpinner as SpinnerIcon } from "react-icons/cg";
 import { IoMdClose as CloseIcon } from "react-icons/io";
 
 import { FC } from "react";
-import { Link } from "react-router-dom";
-import { cn } from "@/lib/utils";
+import { Link, useNavigate } from "react-router-dom";
+import { cn, getVideoCover } from "@/lib/utils";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,13 +20,14 @@ import {
   FormMessage,
 } from "../ui/form";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { toast } from "sonner";
 import { addVideo } from "@/services/appwrite/utils/addVideo";
 import { AppwriteException } from "appwrite";
+import { Video } from "@/interfaces";
 
 interface Props {
   close: () => void;
@@ -56,7 +57,8 @@ const formSchema = z.object({
 
 const UploadForm: FC<Props> = ({ close }) => {
   const { user } = userStore();
-  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -66,20 +68,21 @@ const UploadForm: FC<Props> = ({ close }) => {
   });
 
   const { isPending, mutate: uploadMutation } = useMutation<
+    Video,
     unknown,
-    unknown,
-    { caption: string; video: File },
+    { caption: string; video: File; thumbnail: File },
     unknown
   >({
-    mutationFn: ({ caption, video }) =>
+    mutationFn: ({ caption, video, thumbnail }) =>
       addVideo({
         caption,
         userId: user?.$id as string,
         video,
+        thumbnail,
       }),
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast.success("Video uploaded successfully");
-      queryClient.invalidateQueries({ queryKey: ["videos"] });
+      navigate(`/video/${data.$id}`);
       close();
     },
     onError: (e) => {
@@ -89,7 +92,7 @@ const UploadForm: FC<Props> = ({ close }) => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const { caption, video } = values;
     if (!video) {
       toast.error("Please select a video");
@@ -101,7 +104,15 @@ const UploadForm: FC<Props> = ({ close }) => {
       return;
     }
 
-    uploadMutation({ caption, video });
+    const thumbnailImage = await getVideoCover(video, 1);
+
+    const thumbnailFile = thumbnailImage
+      ? new File([thumbnailImage], "thumbnail.png", {
+          type: "image/png",
+        })
+      : null;
+
+    uploadMutation({ caption, video, thumbnail: thumbnailFile as File });
   };
 
   return (
@@ -109,7 +120,7 @@ const UploadForm: FC<Props> = ({ close }) => {
       initial={{ y: 20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: 20, opacity: 0 }}
-      className="absolute left-0 h-[400px] top-[-400px] bg-white text-black w-full p-4 rounded-t-xl -z-10"
+      className="absolute z-10 left-0 h-[400px] top-[-400px] bg-white text-black w-full p-4 rounded-t-xl"
     >
       <Button
         variant={"secondary"}
@@ -161,8 +172,9 @@ const UploadForm: FC<Props> = ({ close }) => {
                             accept="video/*"
                             className="w-full h-14 px-4 text-base rounded-lg"
                             placeholder="Select your video"
-                            onChange={(e) => {
+                            onChange={async (e) => {
                               field.onChange(e.target.files?.[0]);
+                              // const thumbnailFile = await getVideoCover();
                             }}
                             disabled={isPending}
                             multiple={false}

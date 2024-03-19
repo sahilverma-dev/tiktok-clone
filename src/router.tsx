@@ -12,6 +12,8 @@ import Register from "./pages/Register";
 import NavLayout from "./components/layouts/NavLayout";
 import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/custom/ProtectedRoute";
+import Video from "./pages/Video";
+import EditProfile from "./pages/EditProfile";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -19,6 +21,8 @@ export const router = createBrowserRouter(
       <Route path="/" element={<NavLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/user/:id" element={<Profile />} />
+        <Route path="/edit-profile/:id" element={<EditProfile />} />
+        <Route path="/video/:videoId" element={<Video />} />
       </Route>
       <Route
         path="/login"

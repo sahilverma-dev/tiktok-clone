@@ -6,6 +6,7 @@ import ReactQueryProvider from "./ReactQueryProvider";
 import { account } from "@/services/appwrite/client";
 import { userStore } from "@/services/zustand";
 import { getUserWithId } from "@/services/appwrite/utils/getUserWithId";
+import Loader from "@/pages/Home/Loader";
 
 const Providers = ({ children }: PropsWithChildren) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -16,11 +17,10 @@ const Providers = ({ children }: PropsWithChildren) => {
       try {
         setIsLoading(true);
         const { $id: userId } = await account.get();
-        console.log(userId);
 
         if (userId) {
           // TODO change this
-          const user = await getUserWithId("65ec2e5b7ade8e8a59e2");
+          const user = await getUserWithId(userId);
           login(user);
         }
       } catch (error) {
@@ -30,11 +30,18 @@ const Providers = ({ children }: PropsWithChildren) => {
       }
     };
     getUserData();
-  }, []);
+  }, [login]);
+
   return (
     <ReactQueryProvider>
       <Toaster richColors theme="dark" position="top-center" />
-      {isLoading ? "Loading" : children}
+      {isLoading ? (
+        <div className="h-dvh w-full">
+          <Loader />
+        </div>
+      ) : (
+        children
+      )}
     </ReactQueryProvider>
   );
 };

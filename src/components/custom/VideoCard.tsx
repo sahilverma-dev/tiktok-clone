@@ -71,10 +71,7 @@ const VideoCard: FC<Props> = ({ video }) => {
   }, []);
 
   return (
-    <div
-      className="relative h-full w-full rounded-lg overflow-hidden"
-      ref={ref}
-    >
+    <div className="relative h-full w-full" ref={ref}>
       <AnimatePresence mode="wait">
         {isLoading && (
           <motion.div
@@ -101,7 +98,7 @@ const VideoCard: FC<Props> = ({ video }) => {
       </AnimatePresence>
       <div className="absolute bottom-0 left-0 p-4 w-full z-10">
         <div className="flex gap-2 items-center">
-          <Link to={`user/${video.user.$id}`}>
+          <Link to={`/user/${video.user.$id}`}>
             <img
               src={video.user.avatar}
               alt={video.user.full_name}

@@ -32,8 +32,11 @@ import { cn } from "@/lib/utils";
 import { Link, useNavigate } from "react-router-dom";
 
 // appwrite
-import { AppwriteException } from "appwrite";
+import { AppwriteException, Models } from "appwrite";
 import { loginUser } from "@/services/appwrite/utils/login-user";
+
+import { getUserWithId } from "@/services/appwrite/utils/getUserWithId";
+import { userStore } from "@/services/zustand";
 
 // form schema
 const formSchema = z.object({
@@ -47,6 +50,7 @@ const formSchema = z.object({
 
 const LoginForm = () => {
   const navigate = useNavigate();
+  const { login } = userStore();
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -58,16 +62,17 @@ const LoginForm = () => {
   });
 
   const { isPending, mutate: loginMutation } = useMutation<
-    unknown,
+    Models.Session,
     unknown,
     { email: string; password: string },
     unknown
   >({
     mutationFn: ({ email, password }) => loginUser(email, password),
-    onSuccess: () => {
+    onSuccess: async (data) => {
+      const userId = data?.userId;
+      const user = await getUserWithId(userId);
+      login(user);
       navigate("/");
-      // JUGAAD NOT RECOMMENDED
-      window.location.reload();
       toast.success("Login successful");
     },
     onError: (e) => {
