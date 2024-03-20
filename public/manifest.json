@@ -1,0 +1,37 @@
+{
+  "background_color": "#000000",
+  "description": "TikTok - trends start here. On a device or on the web, viewers can watch and discover millions of personalized short videos. Download the app to get started.",
+  "dir": "auto",
+  "display": "standalone",
+  "name": "TikTok",
+  "orientation": "portrait",
+  "scope": "/",
+  "short_name": "TikTok",
+  "start_url": "/",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "type": "image/png",
+      "sizes": "152x152"
+    },
+    {
+      "src": "/poster-square.png",
+      "type": "image/png",
+      "sizes": "928x928"
+    },
+    {
+      "src": "/favicon.ico",
+      "type": "image/png",
+      "sizes": "152x152"
+    }
+  ],
+  "lang": "en",
+  "display_override": [
+    "fullscreen",
+    "minimal-ui",
+    "standalone",
+    "browser",
+    "window-controls-overlay"
+  ]
+}
