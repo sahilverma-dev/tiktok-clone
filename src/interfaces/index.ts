@@ -20,6 +20,7 @@ export interface User {
   avatar: string;
   bio: string;
   full_name: string;
+  email: string;
   is_verified: boolean;
   $id: string;
   $createdAt: string;

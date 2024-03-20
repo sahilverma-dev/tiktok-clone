@@ -19,7 +19,7 @@ export const registerUser: Type = async ({ email, password, fullName }) => {
   const userDoc = await databases.createDocument(
     DATABASE_ID,
     USER_COLLECTION_ID,
-    ID.unique(),
+    user.$id,
     {
       auth_id: user.$id,
       email: email.trim(),

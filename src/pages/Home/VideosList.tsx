@@ -27,34 +27,42 @@ const VideosList: FC<Prop> = ({ videos, fetchNextPage }) => {
       setHeight(window.innerHeight - 56);
     };
   }, []);
-  return (
-    <Swiper
-      direction="vertical"
-      style={{ height: `${height}px` }}
-      modules={[Virtual, Mousewheel]}
-      virtual
-      mousewheel
-      onReachEnd={() => {
-        fetchNextPage();
-        toast.promise(fetchNextPage, {
-          loading: "Loading videos...",
-          success: "Videos loaded",
-          error: "Error loading videos",
-          duration: 800,
-        });
-      }}
-    >
-      {videos.map((video, i) => (
-        <SwiperSlide
-          key={video.$id}
-          virtualIndex={i}
-          style={{ height: `${height}px` }}
-        >
-          <VideoCard video={video} />
-        </SwiperSlide>
-      ))}
-    </Swiper>
-  );
+
+  if (videos.length === 0) {
+    return (
+      <div className="w-full h-dvh flex justify-center items-center">
+        No videos found
+      </div>
+    );
+  } else
+    return (
+      <Swiper
+        direction="vertical"
+        style={{ height: `${height}px` }}
+        modules={[Virtual, Mousewheel]}
+        virtual
+        mousewheel
+        onReachEnd={() => {
+          fetchNextPage();
+          toast.promise(fetchNextPage, {
+            loading: "Loading videos...",
+            success: "Videos loaded",
+            error: "Error loading videos",
+            duration: 800,
+          });
+        }}
+      >
+        {videos.map((video, i) => (
+          <SwiperSlide
+            key={video.$id}
+            virtualIndex={i}
+            style={{ height: `${height}px` }}
+          >
+            <VideoCard video={video} />
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    );
 };
 
 export default VideosList;

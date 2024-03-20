@@ -46,12 +46,14 @@ const Profile = () => {
         <img
           src={currentUser?.avatar}
           alt="profile"
-          className="w-28 h-28 rounded-full"
+          className="w-28 h-28 aspect-square rounded-full object-cover border"
         />
         <div className="flex flex-col w-full">
-          <div className="flex gap-2 items-center  w-full">
-            <h1 className="font-bold">{currentUser.full_name}</h1>
-            {user?.is_verified && <VerifiedIcon title="Verified" />}
+          <div className="flex gap-2 items-center w-full">
+            <h1 className="font-bold flex gap-2 items-center justify-start">
+              <span className="truncate">{currentUser.full_name}</span>
+              {user?.is_verified && <VerifiedIcon title="Verified" />}
+            </h1>
             {user?.$id === currentUser.$id && (
               <div className="flex items-center gap-1 ml-auto">
                 <Link
@@ -77,7 +79,7 @@ const Profile = () => {
             )}
           </div>
 
-          <p className="small-medium md:base-medium mt-3">
+          <p className="text-sm mt-3">
             {currentUser?.bio || "There is no bio."}
           </p>
         </div>
