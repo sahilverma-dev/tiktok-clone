@@ -129,7 +129,7 @@ const VideoCard: FC<Props> = ({ video }) => {
           ref={videoRef}
           src={video.video}
           poster={video.thumbnail}
-          className="w-full h-full object-cover pointer-events-none"
+          className="w-full h-full pointer-events-none"
           muted={mute}
           autoPlay
           playsInline
